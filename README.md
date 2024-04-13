@@ -69,3 +69,9 @@ Start the server
 | Parameter | Type     | Description              |
 |:----------| :------- |:-------------------------|
 | `query`   | `string` | **Required**. user query |
+
+
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
