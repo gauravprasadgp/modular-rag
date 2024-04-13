@@ -4,7 +4,8 @@ import uvicorn
 from fastapi import FastAPI, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from retrieve.vector_store import create_embeddings_from_file
+from generator.llm_calls import get_answer
+from retrieve.vector_store import create_embeddings_from_file, get_relevant_document
 from utils.db import postgres_db
 
 llms = {}
@@ -40,7 +41,9 @@ async def create_embedding(file: UploadFile):
 @app.post("/answer")
 async def post_conversation(request: Request):
     payload = await request.json()
-
+    query = payload.get("query")
+    context = get_relevant_document(query=query)
+    return await get_answer(context=context, query=query)
 
 @app.get("/")
 async def get_test(request: Request):

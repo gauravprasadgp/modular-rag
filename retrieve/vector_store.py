@@ -5,11 +5,9 @@ from fastapi import File
 from llama_index.core import SimpleDirectoryReader
 from llama_index.core.node_parser import SentenceWindowNodeParser
 from llama_index.core.schema import BaseNode
-from llama_index.legacy.embeddings import HuggingFaceEmbedding
 
+from generator.llm_calls import get_embed_model
 from utils.db import postgres_db
-
-embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
 
 
 async def create_embeddings_from_file(file: File()):
@@ -22,7 +20,7 @@ async def create_embeddings_from_file(file: File()):
 
     nodes = node_parser.get_nodes_from_documents(documents)
     for node in nodes:
-        embedding = embed_model.get_text_embedding(node.get_content())
+        embedding = await get_embed_model().aget_text_embedding(node.get_content())
         node.embedding = embedding
 
 
@@ -51,7 +49,7 @@ async def insert_documents(nodes):
 
 
 async def get_relevant_document(query: str):
-    embedded_question = embed_model.get_query_embedding(query=query)
+    embedded_question = await get_embed_model().aget_query_embedding(query=query)
     try:
         async with postgres_db.db_pool as conn:
             async with conn.cursor() as cur:
