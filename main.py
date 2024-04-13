@@ -5,10 +5,9 @@ from fastapi import FastAPI, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 from generator.llm_calls import get_answer
+from rerank.rerank import rerank_documents
 from retrieve.vector_store import create_embeddings_from_file, get_relevant_document
 from utils.db import postgres_db
-
-llms = {}
 
 app = FastAPI(title="Modular RAG",
               version="1.0.0", )
@@ -42,8 +41,11 @@ async def create_embedding(file: UploadFile):
 async def post_conversation(request: Request):
     payload = await request.json()
     query = payload.get("query")
-    context = get_relevant_document(query=query)
-    return await get_answer(context=context, query=query)
+    context = await get_relevant_document(query=query)
+    sorted_docs = rerank_documents(question=query, documents=context)
+    sorted_context = "\n\n".join(sorted_docs)
+    return await get_answer(context=sorted_context, query=query)
+
 
 @app.get("/")
 async def get_test(request: Request):

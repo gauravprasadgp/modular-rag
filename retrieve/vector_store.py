@@ -54,9 +54,9 @@ async def get_relevant_document(query: str):
         async with postgres_db.db_pool as conn:
             async with conn.cursor() as cur:
                 await cur.execute(f"""SELECT metadata -> 'window', 1 - (embedding <=> '{embedded_question}') AS 
-                cosine_similarity from document_embedding ORDER BY cosine_similarity DESC limit 5;""")
+                cosine_similarity from document_embedding ORDER BY cosine_similarity DESC limit 10;""")
                 results = await cur.fetchall()
-                docs = "\n\n".join([row[0] for row in results])
+                docs = [row[0] for row in results]
                 return docs
     except Exception as error:
         print(f"insert document exception {error}")
