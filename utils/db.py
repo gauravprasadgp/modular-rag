@@ -6,11 +6,11 @@ from psycopg_pool import AsyncConnectionPool
 
 def get_conn_str():
     return f"""
-    dbname={os.getenv('POSTGRES_DB')}
-    user={os.getenv('POSTGRES_USER')}
-    password={os.getenv('POSTGRES_PASSWORD')}
-    host={os.getenv('POSTGRES_HOST')}
-    port={os.getenv('POSTGRES_PORT')}
+    dbname={os.getenv('POSTGRES_DB') or "vectordb"}
+    user={os.getenv('POSTGRES_USER') or "user"}
+    password={os.getenv('POSTGRES_PASSWORD') or "password"}
+    host={os.getenv('POSTGRES_HOST') or "localhost"}
+    port={os.getenv('POSTGRES_PORT') or "5432"}
     """
 
 
